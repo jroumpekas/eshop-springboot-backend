@@ -1,12 +1,25 @@
 # E-Shop Backend API
 
-Backend REST API for a full-stack e-shop application built with **Spring Boot**, **PostgreSQL**, **Flyway**, and **JWT Authentication**.
+A RESTful backend API for a full-stack e-shop application, built with **Spring Boot**, **PostgreSQL**, **Flyway**, and **JWT Authentication**.
 
-This project provides the server-side functionality for an e-shop platform, including products, categories, users, authentication, authorization, cart items, and orders.
+The application provides the server-side functionality for an e-commerce platform, including product management, categories, users, authentication, authorization, cart handling, and orders.
+
+## Overview
+
+This project is part of a full-stack e-shop portfolio application.
+
+The backend is responsible for:
+
+* Exposing REST API endpoints
+* Managing users and authentication
+* Securing protected resources with JWT
+* Applying role-based access control
+* Handling products, categories, cart items, and orders
+* Managing the database schema with Flyway migrations
 
 ## Tech Stack
 
-* Java 21
+* Java
 * Spring Boot
 * Spring Web
 * Spring Data JPA
@@ -16,21 +29,41 @@ This project provides the server-side functionality for an e-shop platform, incl
 * Flyway
 * Maven
 * Lombok
-* Validation
+* Jakarta Validation
 
-## Main Features
+## Features
 
-* User registration and login
+### Authentication & Authorization
+
+* User registration
+* User login
 * JWT-based authentication
 * Role-based authorization
 * USER and ADMIN roles
-* Product management
-* Category management
-* Cart item management
-* Order management
+* Protected API endpoints
+
+### Product & Category Management
+
+* Retrieve products
+* Retrieve product details
+* Manage products
+* Manage categories
+* Public product and category browsing
+
+### Cart & Orders
+
+* Cart item structure
+* Order structure
+* Authenticated user access for cart and order-related operations
+
+### Database & Architecture
+
+* PostgreSQL database
 * Flyway database migrations
+* Layered backend architecture
+* DTO-based request and response handling
+* Entity-to-DTO mapping
 * Global exception handling
-* REST API structure with DTOs, mappers, services, repositories, and controllers
 
 ## Project Structure
 
@@ -39,7 +72,7 @@ src/main/java/gr/aueb/cf/eshop_app
 ├── controller        # REST controllers
 ├── dto               # Data Transfer Objects
 ├── exception         # Global exception handling
-├── mapper            # Entity to DTO mappers
+├── mapper            # Entity-to-DTO mappers
 ├── models            # JPA entities and enums
 ├── repository        # Spring Data JPA repositories
 ├── security          # JWT and Spring Security configuration
@@ -49,43 +82,41 @@ src/main/java/gr/aueb/cf/eshop_app
 
 ## Database
 
-The application uses PostgreSQL.
+The application uses **PostgreSQL** as the relational database.
 
-Default local database name:
+Database schema changes are handled through **Flyway migrations**.
 
-```text
-eshop_db
-```
-
-Database schema is managed with Flyway migrations located in:
+Migration files are located in:
 
 ```text
 src/main/resources/db/migration
 ```
 
+When the application starts, Flyway automatically applies any pending migrations.
+
 ## Configuration
 
-The real `application.properties` file is not included in the repository for security reasons.
+The real `application.properties` file is intentionally excluded from version control for security reasons.
 
-Use the provided example file:
+An example configuration file is provided:
 
 ```text
 src/main/resources/application-example.properties
 ```
 
-Create your own local configuration file:
+Create a local configuration file:
 
 ```text
 src/main/resources/application.properties
 ```
 
-Example configuration:
+Example structure:
 
 ```properties
 spring.application.name=e-shop
 server.port=8080
 
-spring.datasource.url=jdbc:postgresql://localhost:5432/eshop_db
+spring.datasource.url=jdbc:postgresql://localhost:5432/your_database_name
 spring.datasource.username=your_database_username
 spring.datasource.password=your_database_password
 spring.datasource.driver-class-name=org.postgresql.Driver
@@ -98,13 +129,15 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 spring.flyway.enabled=true
 spring.flyway.locations=classpath:db/migration
 
-app.jwt.secret=change_this_secret_key_at_least_32_characters_long
+app.jwt.secret=your_jwt_secret
 app.jwt.expiration-ms=86400000
 ```
 
+Do not commit real database credentials, JWT secrets, or environment-specific configuration.
+
 ## Running the Application
 
-From the backend project root, run:
+From the project root, run:
 
 ```bash
 ./mvnw spring-boot:run
@@ -116,7 +149,7 @@ On Windows:
 mvnw.cmd spring-boot:run
 ```
 
-Or with Maven installed:
+Alternatively, if Maven is installed locally:
 
 ```bash
 mvn spring-boot:run
@@ -128,74 +161,23 @@ The backend runs by default on:
 http://localhost:8080
 ```
 
-## Authentication Endpoints
+## API Overview
 
-### Register
+### Authentication
 
 ```http
 POST /api/auth/register
-```
-
-Example request:
-
-```json
-{
-  "username": "john1",
-  "email": "john1@example.com",
-  "password": "Password123!",
-  "firstName": "John",
-  "lastName": "Doe"
-}
-```
-
-### Login
-
-```http
 POST /api/auth/login
 ```
 
-Example request:
-
-```json
-{
-  "username": "john1",
-  "password": "Password123!"
-}
-```
-
-Example response:
-
-```json
-{
-  "token": "jwt_token_here",
-  "userId": 1,
-  "username": "john1",
-  "email": "john1@example.com"
-}
-```
-
-The returned JWT token must be included in protected requests:
+### Users
 
 ```http
-Authorization: Bearer jwt_token_here
+GET    /api/users/me
+GET    /api/users
+GET    /api/users/{id}
+DELETE /api/users/{id}
 ```
-
-## Authorization
-
-The application supports two roles:
-
-```text
-USER
-ADMIN
-```
-
-General access rules:
-
-* Public users can view products and categories.
-* Logged-in users can access their profile, cart, and orders.
-* Admin users can manage products, categories, and users.
-
-## Main API Endpoints
 
 ### Products
 
@@ -217,15 +199,6 @@ PUT    /api/categories/{id}
 DELETE /api/categories/{id}
 ```
 
-### Users
-
-```http
-GET    /api/users/me
-GET    /api/users
-GET    /api/users/{id}
-DELETE /api/users/{id}
-```
-
 ### Cart
 
 ```http
@@ -244,31 +217,43 @@ PUT    /api/orders/{id}
 DELETE /api/orders/{id}
 ```
 
-## Frontend
+## Security
+
+The application uses **Spring Security** with **JWT authentication**.
+
+Public access is allowed for authentication endpoints and basic product/category browsing.
+
+Protected resources require a valid JWT token.
+
+Role-based access is applied as follows:
+
+* `USER`: access to user-specific resources such as profile, cart, and orders
+* `ADMIN`: access to administrative actions such as managing users, products, and categories
+
+## Frontend Integration
 
 This backend is designed to work with an Angular frontend application.
 
-Frontend default local URL:
+Default frontend development URL:
 
 ```text
 http://localhost:4200
 ```
 
-CORS is configured to allow communication between the Angular frontend and the Spring Boot backend during local development.
+CORS is configured for local frontend-backend communication during development.
 
-## Development Notes
+## Local Development Setup
 
 Before running the project locally:
 
-1. Create a PostgreSQL database named `eshop_db`.
-2. Create your local `application.properties`.
-3. Start the Spring Boot application.
-4. Flyway will automatically run the database migrations.
-5. Use Postman or the Angular frontend to test the API.
+1. Create a PostgreSQL database.
+2. Create a local `application.properties` file based on `application-example.properties`.
+3. Configure the local database connection.
+4. Start the Spring Boot application.
+5. Flyway will automatically apply the database migrations.
+6. Use the Angular frontend or an API client to interact with the backend.
 
-## Status
-
-This project is under active development.
+## Current Status
 
 Completed:
 
@@ -278,8 +263,9 @@ Completed:
 * JWT authentication
 * Role-based authorization
 * Cart structure
-* Orders structure
+* Order structure
 * Flyway migrations
+* Global exception handling
 * Angular frontend integration
 
 Planned improvements:
@@ -287,10 +273,20 @@ Planned improvements:
 * Complete checkout flow
 * Improve order creation from cart
 * Add admin dashboard
-* Add better validation responses
-* Add more automated tests
-* Improve API documentation
+* Add automated tests
+* Improve validation error responses
+* Add API documentation with OpenAPI/Swagger
+
+## Related Project
+
+This backend is part of a full-stack e-shop application.
+
+Frontend repository:
+
+```text
+Angular E-Shop Frontend
+```
 
 ## Author
 
-Created by Dimitris Roumpekas as part of a full-stack e-shop portfolio project.
+Created by Dimitris Roumpékas as part of a full-stack portfolio project.
