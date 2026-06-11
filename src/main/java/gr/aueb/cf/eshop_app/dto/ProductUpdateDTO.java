@@ -30,4 +30,9 @@ public class ProductUpdateDTO {
     @NotNull(message = "Stock must be included")
     @Positive(message = "Stock must be positive")
     private Integer stock;
+
+    private String imageUrl;
+    private BigDecimal oldPrice;
+    private String category;
+    private BigDecimal rating;
 }

@@ -29,4 +29,16 @@ public class Product {
 
     @Column(nullable = false)
     private Integer stock;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "old_price", precision = 10, scale = 2)
+    private BigDecimal oldPrice;
+
+    @Column(length = 100)
+    private String category;
+
+    @Column(precision = 2, scale = 1)
+    private BigDecimal rating;
 }

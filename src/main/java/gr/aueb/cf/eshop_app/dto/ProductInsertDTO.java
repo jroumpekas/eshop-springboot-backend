@@ -27,4 +27,9 @@ public class ProductInsertDTO {
     private BigDecimal price;
 
     private Integer stock;
+
+    private String imageUrl;
+    private BigDecimal oldPrice;
+    private String category;
+    private BigDecimal rating;
 }
