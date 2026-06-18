@@ -1,9 +1,6 @@
 package gr.aueb.cf.eshop_app.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -26,10 +23,12 @@ public class ProductInsertDTO {
     @Positive(message = "Price must be positive")
     private BigDecimal price;
 
-    private Integer stock;
-
     private String imageUrl;
     private BigDecimal oldPrice;
     private String category;
     private BigDecimal rating;
+
+    @NotNull(message = "Stock must be included")
+    @PositiveOrZero(message = "Stock must be zero or positive")
+    private Integer stock;
 }
