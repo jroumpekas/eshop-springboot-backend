@@ -4,7 +4,6 @@ import gr.aueb.cf.eshop_app.models.Order;
 import gr.aueb.cf.eshop_app.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Arrays;
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
