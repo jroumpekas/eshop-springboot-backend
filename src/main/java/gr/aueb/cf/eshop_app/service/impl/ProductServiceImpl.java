@@ -3,6 +3,7 @@ package gr.aueb.cf.eshop_app.service.impl;
 import gr.aueb.cf.eshop_app.dto.ProductInsertDTO;
 import gr.aueb.cf.eshop_app.dto.ProductReadOnlyDTO;
 import gr.aueb.cf.eshop_app.dto.ProductUpdateDTO;
+import gr.aueb.cf.eshop_app.exception.custom.ResourceNotFoundException;
 import gr.aueb.cf.eshop_app.mapper.ProductMapper;
 import gr.aueb.cf.eshop_app.models.Product;
 import gr.aueb.cf.eshop_app.repository.ProductRepository;
@@ -35,7 +36,9 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     public ProductReadOnlyDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product with id " + id + " was not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " was not found"
+
+                ));
 
         return productMapper.mapToReadOnlyDTO(product);
     }
@@ -52,7 +55,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductReadOnlyDTO updateProduct(Long id, ProductUpdateDTO dto) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product with id " + id + " was not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " was not found"
+
+                ));
 
         productMapper.updateProductFromDTO(product, dto);
 
