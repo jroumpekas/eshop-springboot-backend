@@ -1,6 +1,6 @@
 # E-Shop Backend API
 
-A RESTful backend API for a full-stack e-shop application, built with **Spring Boot**, **PostgreSQL**, **Flyway**, and **JWT Authentication**.
+A RESTful backend API for a full-stack e-shop application, built with **Spring Boot**, **PostgreSQL**, **Flyway**, **JWT Authentication**, and **OpenAPI/Swagger documentation**.
 
 The application provides the server-side functionality for an e-commerce platform, including product management, categories, users, authentication, authorization, cart handling, and orders.
 
@@ -30,6 +30,7 @@ The backend is responsible for:
 * Maven
 * Lombok
 * Jakarta Validation
+* Springdoc OpenAPI / Swagger UI
 
 ## Features
 
@@ -55,6 +56,13 @@ The backend is responsible for:
 * Cart item structure
 * Order structure
 * Authenticated user access for cart and order-related operations
+
+### API Documentation
+
+* OpenAPI documentation generated with Springdoc
+* Swagger UI for browsing and testing backend endpoints
+* Public documentation access for local development
+* JWT-protected endpoints can be tested through Swagger using a Bearer token
 
 ### Database & Architecture
 
@@ -161,6 +169,38 @@ The backend runs by default on:
 http://localhost:8080
 ```
 
+## API Documentation with Swagger
+
+The backend includes **OpenAPI/Swagger documentation** using Springdoc.
+
+After starting the Spring Boot application, Swagger UI is available at:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+The raw OpenAPI specification is available at:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+Swagger can be used to inspect and test the available REST endpoints, including authentication, products, categories, users, cart, and orders.
+
+For protected endpoints, first authenticate through the login endpoint, copy the returned JWT token, and use the **Authorize** button in Swagger UI with:
+
+```text
+Bearer <your_jwt_token>
+```
+
+Swagger-related endpoints are allowed through Spring Security:
+
+```text
+/swagger-ui/**
+/swagger-ui.html
+/v3/api-docs/**
+```
+
 ## API Overview
 
 ### Authentication
@@ -221,7 +261,7 @@ DELETE /api/orders/{id}
 
 The application uses **Spring Security** with **JWT authentication**.
 
-Public access is allowed for authentication endpoints and basic product/category browsing.
+Public access is allowed for authentication endpoints, basic product/category browsing, and Swagger/OpenAPI documentation endpoints.
 
 Protected resources require a valid JWT token.
 
@@ -251,7 +291,7 @@ Before running the project locally:
 3. Configure the local database connection.
 4. Start the Spring Boot application.
 5. Flyway will automatically apply the database migrations.
-6. Use the Angular frontend or an API client to interact with the backend.
+6. Open Swagger UI or use the Angular frontend / an API client to interact with the backend.
 
 ## Current Status
 
@@ -267,6 +307,7 @@ Completed:
 * Flyway migrations
 * Global exception handling
 * Angular frontend integration
+* OpenAPI/Swagger API documentation
 
 Planned improvements:
 
@@ -275,7 +316,6 @@ Planned improvements:
 * Add admin dashboard
 * Add automated tests
 * Improve validation error responses
-* Add API documentation with OpenAPI/Swagger
 
 ## Related Project
 
