@@ -108,8 +108,7 @@ class OrderServiceImplTest {
         String username = "admin";
         User user = createUser(1L, username);
 
-        CheckoutRequestDTO request = new CheckoutRequestDTO();
-        request.setItems(List.of());
+        CheckoutRequestDTO request = new CheckoutRequestDTO(List.of());
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
@@ -269,13 +268,8 @@ class OrderServiceImplTest {
     }
 
     private CheckoutRequestDTO createCheckoutRequest(Long productId, Integer quantity) {
-        CheckoutItemDTO itemDTO = new CheckoutItemDTO();
-        itemDTO.setProductId(productId);
-        itemDTO.setQuantity(quantity);
+        CheckoutItemDTO itemDTO = new CheckoutItemDTO(productId, quantity);
 
-        CheckoutRequestDTO request = new CheckoutRequestDTO();
-        request.setItems(List.of(itemDTO));
-
-        return request;
+        return new CheckoutRequestDTO(List.of(itemDTO));
     }
 }

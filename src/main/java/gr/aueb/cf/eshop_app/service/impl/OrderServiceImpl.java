@@ -138,7 +138,7 @@ public class OrderServiceImpl implements OrderService {
                         "User with username " + username + " was not found"
                 ));
 
-        if (request.getItems() == null || request.getItems().isEmpty()) {
+        if (request.items() == null || request.items().isEmpty()) {
             throw new IllegalArgumentException("Cart is empty");
         }
 
@@ -153,33 +153,33 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderItem> orderItems = new ArrayList<>();
 
-        for (CheckoutItemDTO itemDTO : request.getItems()) {
-            Product product = productRepository.findById(itemDTO.getProductId())
+        for (CheckoutItemDTO itemDTO : request.items()) {
+            Product product = productRepository.findById(itemDTO.productId())
                     .orElseThrow(() -> new EntityNotFoundException(
-                            "Product with id " + itemDTO.getProductId() + " was not found"
+                            "Product with id " + itemDTO.productId() + " was not found"
                     ));
 
-            if (itemDTO.getQuantity() > product.getStock()) {
+            if (itemDTO.quantity() > product.getStock()) {
                 throw new IllegalArgumentException(
                         "Not enough stock for product: " + product.getName()
                 );
             }
 
             BigDecimal itemSubtotal = product.getPrice()
-                    .multiply(BigDecimal.valueOf(itemDTO.getQuantity()));
+                    .multiply(BigDecimal.valueOf(itemDTO.quantity()));
 
             totalAmount = totalAmount.add(itemSubtotal);
 
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .product(product)
-                    .quantity(itemDTO.getQuantity())
+                    .quantity(itemDTO.quantity())
                     .price(product.getPrice().doubleValue())
                     .build();
 
             orderItems.add(orderItem);
 
-            product.setStock(product.getStock() - itemDTO.getQuantity());
+            product.setStock(product.getStock() - itemDTO.quantity());
         }
 
         order.setTotalAmount(totalAmount);

@@ -24,11 +24,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(readOnly = true)
     public AuthResponseDTO login(LoginDTO dto) {
-        User user = userRepository.findByUsername(dto.getUsername())
+        User user = userRepository.findByUsername(dto.username())
                 .orElseThrow(() -> new BadCredentialsException("Invalid username or password"));
 
         boolean passwordMatches = passwordEncoder.matches(
-                dto.getPassword(),
+                dto.password(),
                 user.getPassword()
         );
 

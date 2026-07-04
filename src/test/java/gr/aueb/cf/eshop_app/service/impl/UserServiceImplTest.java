@@ -160,29 +160,29 @@ class UserServiceImplTest {
         String encodedPassword = "encoded-password";
 
         User userToSave = User.builder()
-                .username(insertDTO.getUsername())
-                .email(insertDTO.getEmail())
+                .username(insertDTO.username())
+                .email(insertDTO.email())
                 .password(encodedPassword)
-                .firstName(insertDTO.getFirstName())
-                .lastName(insertDTO.getLastName())
+                .firstName(insertDTO.firstName())
+                .lastName(insertDTO.lastName())
                 .role(Role.USER)
                 .build();
 
         User savedUser = User.builder()
                 .id(1L)
-                .username(insertDTO.getUsername())
-                .email(insertDTO.getEmail())
+                .username(insertDTO.username())
+                .email(insertDTO.email())
                 .password(encodedPassword)
-                .firstName(insertDTO.getFirstName())
-                .lastName(insertDTO.getLastName())
+                .firstName(insertDTO.firstName())
+                .lastName(insertDTO.lastName())
                 .role(Role.USER)
                 .build();
 
         UserReadOnlyDTO expectedDTO = createReadOnlyDTO(savedUser);
 
-        when(userRepository.existsByUsername(insertDTO.getUsername())).thenReturn(false);
-        when(userRepository.existsByEmail(insertDTO.getEmail())).thenReturn(false);
-        when(passwordEncoder.encode(insertDTO.getPassword())).thenReturn(encodedPassword);
+        when(userRepository.existsByUsername(insertDTO.username())).thenReturn(false);
+        when(userRepository.existsByEmail(insertDTO.email())).thenReturn(false);
+        when(passwordEncoder.encode(insertDTO.password())).thenReturn(encodedPassword);
         when(userMapper.mapToUser(insertDTO, encodedPassword)).thenReturn(userToSave);
         when(userRepository.save(userToSave)).thenReturn(savedUser);
         when(userMapper.mapToReadOnlyDTO(savedUser)).thenReturn(expectedDTO);
@@ -194,9 +194,9 @@ class UserServiceImplTest {
         assertNotNull(result);
         assertSame(expectedDTO, result);
 
-        verify(userRepository).existsByUsername(insertDTO.getUsername());
-        verify(userRepository).existsByEmail(insertDTO.getEmail());
-        verify(passwordEncoder).encode(insertDTO.getPassword());
+        verify(userRepository).existsByUsername(insertDTO.username());
+        verify(userRepository).existsByEmail(insertDTO.email());
+        verify(passwordEncoder).encode(insertDTO.password());
         verify(userMapper).mapToUser(insertDTO, encodedPassword);
         verify(userRepository).save(userToSave);
         verify(userMapper).mapToReadOnlyDTO(savedUser);
@@ -207,7 +207,7 @@ class UserServiceImplTest {
         // Arrange
         UserInsertDTO insertDTO = createUserInsertDTO();
 
-        when(userRepository.existsByUsername(insertDTO.getUsername())).thenReturn(true);
+        when(userRepository.existsByUsername(insertDTO.username())).thenReturn(true);
 
         // Act
         IllegalArgumentException exception = assertThrows(
@@ -218,7 +218,7 @@ class UserServiceImplTest {
         // Assert
         assertEquals("Username already exists", exception.getMessage());
 
-        verify(userRepository).existsByUsername(insertDTO.getUsername());
+        verify(userRepository).existsByUsername(insertDTO.username());
         verify(userRepository, never()).existsByEmail(anyString());
         verifyNoInteractions(passwordEncoder);
         verifyNoInteractions(userMapper);
@@ -230,8 +230,8 @@ class UserServiceImplTest {
         // Arrange
         UserInsertDTO insertDTO = createUserInsertDTO();
 
-        when(userRepository.existsByUsername(insertDTO.getUsername())).thenReturn(false);
-        when(userRepository.existsByEmail(insertDTO.getEmail())).thenReturn(true);
+        when(userRepository.existsByUsername(insertDTO.username())).thenReturn(false);
+        when(userRepository.existsByEmail(insertDTO.email())).thenReturn(true);
 
         // Act
         IllegalArgumentException exception = assertThrows(
@@ -242,8 +242,8 @@ class UserServiceImplTest {
         // Assert
         assertEquals("Email already exists", exception.getMessage());
 
-        verify(userRepository).existsByUsername(insertDTO.getUsername());
-        verify(userRepository).existsByEmail(insertDTO.getEmail());
+        verify(userRepository).existsByUsername(insertDTO.username());
+        verify(userRepository).existsByEmail(insertDTO.email());
         verifyNoInteractions(passwordEncoder);
         verifyNoInteractions(userMapper);
         verify(userRepository, never()).save(any(User.class));

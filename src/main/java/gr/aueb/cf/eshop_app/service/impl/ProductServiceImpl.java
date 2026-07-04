@@ -8,7 +8,6 @@ import gr.aueb.cf.eshop_app.mapper.ProductMapper;
 import gr.aueb.cf.eshop_app.models.Product;
 import gr.aueb.cf.eshop_app.repository.ProductRepository;
 import gr.aueb.cf.eshop_app.service.ProductService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +68,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new EntityNotFoundException("Product with id " + id + " was not found");
+            throw new ResourceNotFoundException("Product with id " + id + " was not found");
         }
 
         productRepository.deleteById(id);

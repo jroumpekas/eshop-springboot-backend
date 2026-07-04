@@ -6,7 +6,7 @@ import gr.aueb.cf.eshop_app.dto.ProductUpdateDTO;
 import gr.aueb.cf.eshop_app.mapper.ProductMapper;
 import gr.aueb.cf.eshop_app.models.Product;
 import gr.aueb.cf.eshop_app.repository.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
+import gr.aueb.cf.eshop_app.exception.custom.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -103,15 +103,15 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void getProductByIdWithUnknownIdThrowsEntityNotFoundException() {
+    void getProductByIdWithUnknownIdThrowsResourceNotFoundException() {
         // Arrange
         Long productId = 99L;
 
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // Act
-        EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> productService.getProductById(productId)
         );
 
@@ -137,26 +137,26 @@ class ProductServiceImplTest {
                 .build();
 
         Product productToSave = Product.builder()
-                .name(insertDTO.getName())
-                .description(insertDTO.getDescription())
-                .price(insertDTO.getPrice())
-                .stock(insertDTO.getStock())
-                .imageUrl(insertDTO.getImageUrl())
-                .oldPrice(insertDTO.getOldPrice())
-                .category(insertDTO.getCategory())
-                .rating(insertDTO.getRating())
+                .name(insertDTO.name())
+                .description(insertDTO.description())
+                .price(insertDTO.price())
+                .stock(insertDTO.stock())
+                .imageUrl(insertDTO.imageUrl())
+                .oldPrice(insertDTO.oldPrice())
+                .category(insertDTO.category())
+                .rating(insertDTO.rating())
                 .build();
 
         Product savedProduct = Product.builder()
                 .id(1L)
-                .name(insertDTO.getName())
-                .description(insertDTO.getDescription())
-                .price(insertDTO.getPrice())
-                .stock(insertDTO.getStock())
-                .imageUrl(insertDTO.getImageUrl())
-                .oldPrice(insertDTO.getOldPrice())
-                .category(insertDTO.getCategory())
-                .rating(insertDTO.getRating())
+                .name(insertDTO.name())
+                .description(insertDTO.description())
+                .price(insertDTO.price())
+                .stock(insertDTO.stock())
+                .imageUrl(insertDTO.imageUrl())
+                .oldPrice(insertDTO.oldPrice())
+                .category(insertDTO.category())
+                .rating(insertDTO.rating())
                 .build();
 
         ProductReadOnlyDTO expectedDTO = createReadOnlyDTO(savedProduct);
@@ -203,14 +203,14 @@ class ProductServiceImplTest {
 
         ProductReadOnlyDTO expectedDTO = new ProductReadOnlyDTO(
                 productId,
-                updateDTO.getName(),
-                updateDTO.getDescription(),
-                updateDTO.getPrice(),
-                updateDTO.getStock(),
-                updateDTO.getImageUrl(),
-                updateDTO.getOldPrice(),
-                updateDTO.getCategory(),
-                updateDTO.getRating()
+                updateDTO.name(),
+                updateDTO.description(),
+                updateDTO.price(),
+                updateDTO.stock(),
+                updateDTO.imageUrl(),
+                updateDTO.oldPrice(),
+                updateDTO.category(),
+                updateDTO.rating()
         );
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
@@ -231,7 +231,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void updateProductWithUnknownIdThrowsEntityNotFoundException() {
+    void updateProductWithUnknownIdThrowsResourceNotFoundException() {
         // Arrange
         Long productId = 99L;
 
@@ -245,8 +245,8 @@ class ProductServiceImplTest {
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // Act
-        EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> productService.updateProduct(productId, updateDTO)
         );
 
@@ -274,15 +274,15 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void deleteProductWithUnknownIdThrowsEntityNotFoundException() {
+    void deleteProductWithUnknownIdThrowsResourceNotFoundException() {
         // Arrange
         Long productId = 99L;
 
         when(productRepository.existsById(productId)).thenReturn(false);
 
         // Act
-        EntityNotFoundException exception = assertThrows(
-                EntityNotFoundException.class,
+        ResourceNotFoundException exception = assertThrows(
+                ResourceNotFoundException.class,
                 () -> productService.deleteProduct(productId)
         );
 
@@ -308,26 +308,26 @@ class ProductServiceImplTest {
                 .build();
 
         Product productToSave = Product.builder()
-                .name(insertDTO.getName())
-                .description(insertDTO.getDescription())
-                .price(insertDTO.getPrice())
-                .stock(insertDTO.getStock())
-                .imageUrl(insertDTO.getImageUrl())
-                .oldPrice(insertDTO.getOldPrice())
-                .category(insertDTO.getCategory())
-                .rating(insertDTO.getRating())
+                .name(insertDTO.name())
+                .description(insertDTO.description())
+                .price(insertDTO.price())
+                .stock(insertDTO.stock())
+                .imageUrl(insertDTO.imageUrl())
+                .oldPrice(insertDTO.oldPrice())
+                .category(insertDTO.category())
+                .rating(insertDTO.rating())
                 .build();
 
         Product savedProduct = Product.builder()
                 .id(2L)
-                .name(insertDTO.getName())
-                .description(insertDTO.getDescription())
-                .price(insertDTO.getPrice())
-                .stock(insertDTO.getStock())
-                .imageUrl(insertDTO.getImageUrl())
-                .oldPrice(insertDTO.getOldPrice())
-                .category(insertDTO.getCategory())
-                .rating(insertDTO.getRating())
+                .name(insertDTO.name())
+                .description(insertDTO.description())
+                .price(insertDTO.price())
+                .stock(insertDTO.stock())
+                .imageUrl(insertDTO.imageUrl())
+                .oldPrice(insertDTO.oldPrice())
+                .category(insertDTO.category())
+                .rating(insertDTO.rating())
                 .build();
 
         ProductReadOnlyDTO expectedDTO = createReadOnlyDTO(savedProduct);

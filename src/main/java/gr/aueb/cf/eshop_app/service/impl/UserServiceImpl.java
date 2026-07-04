@@ -54,15 +54,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserReadOnlyDTO registerUser(UserInsertDTO dto) {
-        if (userRepository.existsByUsername(dto.getUsername())) {
+        if (userRepository.existsByUsername(dto.username())) {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        if (userRepository.existsByEmail(dto.getEmail())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new IllegalArgumentException("Email already exists");
         }
 
-        String encodedPassword = passwordEncoder.encode(dto.getPassword());
+        String encodedPassword = passwordEncoder.encode(dto.password());
 
         User user = userMapper.mapToUser(dto, encodedPassword);
 

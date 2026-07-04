@@ -43,16 +43,16 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItemReadOnlyDTO addItemToCart(Long userId, CartItemInsertDTO dto) {
         User user = getUserOrThrow(userId);
 
-        Product product = productRepository.findById(dto.getProductId())
+        Product product = productRepository.findById(dto.productId())
                 .orElseThrow(() -> new EntityNotFoundException(
-                        "Product with id " + dto.getProductId() + " was not found"
+                        "Product with id " + dto.productId() + " was not found"
                 ));
 
         CartItem cartItem = cartItemRepository.findByUserAndProduct(user, product)
                 .orElse(null);
 
         if (cartItem != null) {
-            int newQuantity = cartItem.getQuantity() + dto.getQuantity();
+            int newQuantity = cartItem.getQuantity() + dto.quantity();
 
             if (newQuantity > product.getStock()) {
                 throw new IllegalArgumentException("Not enough stock for product: " + product.getName());
@@ -64,14 +64,14 @@ public class CartItemServiceImpl implements CartItemService {
             return cartItemMapper.mapToReadOnlyDTO(savedCartItem);
         }
 
-        if (dto.getQuantity() > product.getStock()) {
+        if (dto.quantity() > product.getStock()) {
             throw new IllegalArgumentException("Not enough stock for product: " + product.getName());
         }
 
         CartItem newCartItem = CartItem.builder()
                 .user(user)
                 .product(product)
-                .quantity(dto.getQuantity())
+                .quantity(dto.quantity())
                 .build();
 
         CartItem savedCartItem = cartItemRepository.save(newCartItem);
@@ -88,11 +88,11 @@ public class CartItemServiceImpl implements CartItemService {
 
         Product product = cartItem.getProduct();
 
-        if (dto.getQuantity() > product.getStock()) {
+        if (dto.quantity() > product.getStock()) {
             throw new IllegalArgumentException("Not enough stock for product: " + product.getName());
         }
 
-        cartItem.setQuantity(dto.getQuantity());
+        cartItem.setQuantity(dto.quantity());
 
         CartItem updatedCartItem = cartItemRepository.save(cartItem);
 
