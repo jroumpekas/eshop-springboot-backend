@@ -25,25 +25,25 @@ public class ProductMapper {
 
     public Product mapToProduct(ProductInsertDTO dto) {
         return Product.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .price(dto.getPrice())
-                .stock(dto.getStock())
-                .imageUrl(dto.getImageUrl())
-                .oldPrice(dto.getOldPrice())
-                .category(dto.getCategory())
-                .rating(dto.getRating())
+                .name(dto.name())
+                .description(dto.description())
+                .price(dto.price())
+                .stock(dto.stock())
+                .imageUrl(dto.imageUrl())
+                .oldPrice(dto.oldPrice())
+                .category(dto.category())
+                .rating(dto.rating())
                 .build();
     }
 
     public void updateProductFromDTO(Product product, ProductUpdateDTO dto) {
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
-        product.setStock(dto.getStock());
-        product.setImageUrl(dto.getImageUrl());
-        product.setOldPrice(dto.getOldPrice());
-        product.setCategory(dto.getCategory());
-        product.setRating(dto.getRating());
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPrice(dto.price());
+        product.setStock(dto.stock());
+        product.setImageUrl(dto.imageUrl());
+        product.setOldPrice(dto.oldPrice());
+        product.setCategory(dto.category());
+        product.setRating(dto.rating());
     }
 }

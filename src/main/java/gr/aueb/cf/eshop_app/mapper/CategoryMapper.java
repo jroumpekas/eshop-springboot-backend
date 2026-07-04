@@ -11,7 +11,7 @@ public class CategoryMapper {
 
     public Category mapToCategory(CategoryInsertDTO dto) {
         Category category = new Category();
-        category.setName(dto.getName());
+        category.setName(dto.name());
         return category;
     }
 
@@ -23,6 +23,6 @@ public class CategoryMapper {
     }
 
     public void updateCategoryFromDTO(Category category, CategoryUpdateDTO dto) {
-        category.setName(dto.getName());
+        category.setName(dto.name());
     }
 }

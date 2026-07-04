@@ -11,11 +11,11 @@ public class UserMapper {
 
     public User mapToUser(UserInsertDTO dto, String encodedPassword) {
         return User.builder()
-                .username(dto.getUsername())
-                .email(dto.getEmail())
+                .username(dto.username())
+                .email(dto.email())
                 .password(encodedPassword)
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
                 .role(Role.USER)
                 .build();
     }
