@@ -1,20 +1,16 @@
 package gr.aueb.cf.eshop_app.dto;
 
-import lombok.*;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class CartItemReadOnlyDTO {
-
-    private Long id;
-    private Long productId;
-    private String productName;
-    private BigDecimal productPrice;
-    private Integer quantity;
-    private BigDecimal subtotal;
-}
+public record CartItemReadOnlyDTO(
+        Long id,
+        Long productId,
+        String productName,
+        BigDecimal productPrice,
+        Integer quantity,
+        BigDecimal subtotal
+)
+{}

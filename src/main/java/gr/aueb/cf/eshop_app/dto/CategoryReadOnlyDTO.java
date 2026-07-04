@@ -1,14 +1,12 @@
 package gr.aueb.cf.eshop_app.dto;
 
-import lombok.*;
+import lombok.Builder;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Builder
-public class CategoryReadOnlyDTO {
+public record CategoryReadOnlyDTO (
+        Long id,
+        String name
+)
 
-    private Long id;
-    private String name;
-}
+{}

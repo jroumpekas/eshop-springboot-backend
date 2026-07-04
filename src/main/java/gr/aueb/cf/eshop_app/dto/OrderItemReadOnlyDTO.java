@@ -1,17 +1,15 @@
 package gr.aueb.cf.eshop_app.dto;
 
-import lombok.*;
+import lombok.Builder;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class OrderItemReadOnlyDTO {
+public record OrderItemReadOnlyDTO (
 
-    private Long id;
-    private Long productId;
-    private String productName;
-    private Integer quantity;
-    private Double price;
-}
+        Long id,
+        Long productId,
+        String productName,
+        Integer quantity,
+        Double price
+
+)
+{}
