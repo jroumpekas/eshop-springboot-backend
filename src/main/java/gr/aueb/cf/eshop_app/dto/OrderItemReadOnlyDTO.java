@@ -12,4 +12,6 @@ public record OrderItemReadOnlyDTO (
         Double price
 
 )
-{}
+{
+
+}

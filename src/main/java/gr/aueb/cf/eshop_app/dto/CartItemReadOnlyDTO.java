@@ -6,11 +6,13 @@ import java.math.BigDecimal;
 
 @Builder
 public record CartItemReadOnlyDTO(
+
         Long id,
         Long productId,
         String productName,
         BigDecimal productPrice,
         Integer quantity,
         BigDecimal subtotal
-)
-{}
+) {
+
+}

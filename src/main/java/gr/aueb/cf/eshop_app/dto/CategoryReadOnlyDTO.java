@@ -5,8 +5,9 @@ import lombok.Builder;
 
 @Builder
 public record CategoryReadOnlyDTO (
+
         Long id,
         String name
-)
+) {
 
-{}
+}

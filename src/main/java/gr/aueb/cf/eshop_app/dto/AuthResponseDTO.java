@@ -1,16 +1,16 @@
 package gr.aueb.cf.eshop_app.dto;
 
 
-import lombok.*;
+import lombok.Builder;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+
 @Builder
-public class AuthResponseDTO {
-    private String token;
-    private Long userId;
-    private String username;
-    private String email;
+public record AuthResponseDTO (
+
+    String token,
+    Long userId,
+    String username,
+    String email
+) {
+
 }

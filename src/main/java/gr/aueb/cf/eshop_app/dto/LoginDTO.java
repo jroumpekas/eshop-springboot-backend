@@ -1,14 +1,18 @@
 package gr.aueb.cf.eshop_app.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Builder;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class LoginDTO {
+
+@Builder
+public record LoginDTO (
+
 
     @NotBlank(message = "Username is required")
-    private String username;
+    String username,
 
     @NotBlank(message = "Password is required")
-    private String password;
+    String password
+) {
+
 }

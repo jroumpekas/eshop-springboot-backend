@@ -16,4 +16,5 @@ public record OrderReadOnlyDTO(
         String status,
         List<OrderItemReadOnlyDTO> orderItems
 ) {
+
 }

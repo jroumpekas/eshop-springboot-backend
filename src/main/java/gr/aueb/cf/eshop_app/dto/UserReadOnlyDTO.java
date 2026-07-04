@@ -12,6 +12,6 @@ public record UserReadOnlyDTO (
         String lastName,
         String role
 
-)
+) {
 
-{}
+}
