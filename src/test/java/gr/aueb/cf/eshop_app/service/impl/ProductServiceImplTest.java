@@ -148,7 +148,6 @@ class ProductServiceImplTest {
                 .build();
 
         Product savedProduct = Product.builder()
-                .id(1L)
                 .name(insertDTO.name())
                 .description(insertDTO.description())
                 .price(insertDTO.price())
@@ -158,6 +157,8 @@ class ProductServiceImplTest {
                 .category(insertDTO.category())
                 .rating(insertDTO.rating())
                 .build();
+
+        savedProduct.setId(1L);
 
         ProductReadOnlyDTO expectedDTO = createReadOnlyDTO(savedProduct);
 
@@ -319,7 +320,6 @@ class ProductServiceImplTest {
                 .build();
 
         Product savedProduct = Product.builder()
-                .id(2L)
                 .name(insertDTO.name())
                 .description(insertDTO.description())
                 .price(insertDTO.price())
@@ -329,6 +329,8 @@ class ProductServiceImplTest {
                 .category(insertDTO.category())
                 .rating(insertDTO.rating())
                 .build();
+
+        savedProduct.setId(2L);
 
         ProductReadOnlyDTO expectedDTO = createReadOnlyDTO(savedProduct);
 
@@ -364,7 +366,6 @@ class ProductServiceImplTest {
             Integer stock
     ) {
         return Product.builder()
-                .id(id)
                 .name(name)
                 .description(description)
                 .price(price)

@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -154,7 +153,7 @@ class UserServiceImplTest {
                 .email("dimitris@test.com")
                 .password("Password1!")
                 .firstName("Dimitris")
-                .lastName("Roumpis")
+                .lastName("Roumpekas")
                 .build();
 
         String encodedPassword = "encoded-password";
@@ -169,7 +168,6 @@ class UserServiceImplTest {
                 .build();
 
         User savedUser = User.builder()
-                .id(1L)
                 .username(insertDTO.username())
                 .email(insertDTO.email())
                 .password(encodedPassword)
@@ -177,6 +175,8 @@ class UserServiceImplTest {
                 .lastName(insertDTO.lastName())
                 .role(Role.USER)
                 .build();
+
+        savedUser.setId(1L);
 
         UserReadOnlyDTO expectedDTO = createReadOnlyDTO(savedUser);
 
@@ -290,13 +290,12 @@ class UserServiceImplTest {
                 .email("dimitris@test.com")
                 .password("Password1!")
                 .firstName("Dimitris")
-                .lastName("Roumpis")
+                .lastName("Roumpekas")
                 .build();
     }
 
     private User createUser(Long id, String username, String email) {
-        return User.builder()
-                .id(id)
+        User user = User.builder()
                 .username(username)
                 .email(email)
                 .password("encoded-password")
@@ -304,7 +303,13 @@ class UserServiceImplTest {
                 .lastName("User")
                 .role(Role.USER)
                 .build();
+
+        user.setId(id);
+
+        return user;
     }
+
+
 
     private UserReadOnlyDTO createReadOnlyDTO(User user) {
         return UserReadOnlyDTO.builder()

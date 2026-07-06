@@ -213,12 +213,13 @@ class OrderServiceImplTest {
         User user = createUser(1L, username);
 
         Order order = Order.builder()
-                .id(1L)
                 .user(user)
                 .status("COMPLETED")
                 .totalAmount(new BigDecimal("100.00"))
                 .orderItems(List.of())
                 .build();
+
+        order.setId(1L);
 
         OrderReadOnlyDTO orderDTO = OrderReadOnlyDTO.builder()
                 .id(1L)
