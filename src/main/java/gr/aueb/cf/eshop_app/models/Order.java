@@ -18,11 +18,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 
-public class Order {
+public class Order extends  AbstractEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
