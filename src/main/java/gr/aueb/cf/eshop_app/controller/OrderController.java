@@ -55,9 +55,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 
-    @PostMapping("/checkout/{userId}")
-    public ResponseEntity<OrderReadOnlyDTO> checkout(@PathVariable Long userId) {
-        OrderReadOnlyDTO order = orderService.checkout(userId);
-        return new ResponseEntity<>(order, HttpStatus.CREATED);
-    }
+//    @PostMapping("/checkout/{userId}")
+//    public ResponseEntity<OrderReadOnlyDTO> checkout(@PathVariable Long userId) {
+//        OrderReadOnlyDTO order = orderService.checkout(userId);
+//        return new ResponseEntity<>(order, HttpStatus.CREATED);
+//    }
 }

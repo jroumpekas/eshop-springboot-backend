@@ -13,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -73,9 +72,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
 
-                        // Logged-in users
+                        // Cart - logged-in users
                         .requestMatchers("/api/cart/**").authenticated()
-                        .requestMatchers("/api/orders/**").authenticated()
+
+                        // Orders - logged-in user endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/orders/checkout").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/orders/my-orders").authenticated()
+
+                        // Orders - admin endpoints
+                        .requestMatchers(HttpMethod.GET, "/api/orders").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/orders/user/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/orders/*").hasRole("ADMIN")
+
+                        // Any other order endpoint should be admin by default
+                        .requestMatchers("/api/orders/**").hasRole("ADMIN")
 
                         // Everything else needs authentication
                         .anyRequest().authenticated()
