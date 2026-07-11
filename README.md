@@ -1,26 +1,49 @@
 # E-Shop Backend API
 
-A RESTful backend API for a full-stack e-shop application built with **Spring Boot**, **PostgreSQL**, **Flyway**, **JWT Authentication**, **Spring Security**, and **OpenAPI/Swagger documentation**.
+RESTful backend API for a full-stack e-shop portfolio application, built with **Spring Boot**, **PostgreSQL**, **Flyway**, **JWT Authentication**, **Spring Security**, and **OpenAPI/Swagger**.
 
-The backend provides the server-side functionality for an e-commerce platform, including authentication, role-based authorization, product and category management, cart handling, order handling, database migrations, validation, exception handling, and service-layer testing.
+The backend provides the server-side functionality for an e-commerce platform, including authentication, role-based authorization, product and category management, cart handling, checkout, order handling, database migrations, validation, exception handling, and service-layer testing.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Database and Persistence](#database-and-persistence)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Running Tests](#running-tests)
+- [API Documentation with Swagger](#api-documentation-with-swagger)
+- [API Overview](#api-overview)
+- [Security Rules](#security-rules)
+- [Frontend Integration](#frontend-integration)
+- [Local Development Setup](#local-development-setup)
+- [Current Status](#current-status)
+- [Planned Improvements](#planned-improvements)
+- [Related Project](#related-project)
+- [Author](#author)
 
 ---
 
 ## Overview
 
-This project is part of a full-stack e-shop portfolio application.
+This project is the backend part of a full-stack e-shop application.
 
 The backend is responsible for:
 
 - Exposing REST API endpoints
-- Managing users and authentication
-- Securing protected resources with JWT
+- Managing user registration and login
+- Securing protected resources with JWT authentication
 - Applying role-based access control with `USER` and `ADMIN` roles
-- Handling products, categories, cart items, and orders
-- Managing the database schema with Flyway migrations
+- Handling products, categories, cart items, checkout, and orders
+- Managing database schema changes through Flyway migrations
 - Mapping entities to DTOs
 - Returning consistent error responses through global exception handling
-- Using an audited base entity for common entity fields
+- Using a shared audited base entity for common entity fields
+- Providing API documentation through Swagger UI
 
 ---
 
@@ -37,65 +60,77 @@ The backend is responsible for:
 - Maven
 - Lombok
 - Jakarta Validation
-- Mockito
 - JUnit
+- Mockito
 - Springdoc OpenAPI / Swagger UI
 
 ---
 
 ## Features
 
-### Authentication & Authorization
+### Authentication and Authorization
 
 - User registration
 - User login
 - JWT-based authentication
-- Role-based authorization
 - `USER` and `ADMIN` roles
 - Public, authenticated, and admin-only endpoint access
 - Ordered request matchers in Spring Security configuration
+- Current-user endpoint through JWT authentication
 
-### Product & Category Management
+### Product and Category Management
 
 - Retrieve all products
 - Retrieve product details
-- Retrieve categories
+- Retrieve all categories
+- Retrieve category details
+- Public product and category browsing
 - Admin-only product creation, update, and deletion
 - Admin-only category creation, update, and deletion
-- Public product and category browsing
 
-### Cart & Orders
+### Cart and Checkout
 
-- Cart item structure
+- Cart item model and API structure
+- Authenticated cart access
+- Checkout request handling
+- Order creation from checkout
+- Stock validation during checkout
+- Product stock reduction after successful checkout
+
+### Orders
+
 - Order and order item structure
-- Authenticated access for cart and order-related operations
-- Order-related service layer logic
+- Authenticated users can view their own orders
+- Admin users can access administrative order endpoints
+- Order total amount handling
+- Order item quantity and price handling
 
-### Database & Persistence
+### Database and Persistence
 
 - PostgreSQL database
 - Flyway database migrations
-- JPA / Hibernate entity mapping
+- Hibernate schema validation with `ddl-auto=validate`
+- JPA entity relationships
 - Common `AbstractEntity` base class
 - Shared entity ID handling
 - Audit fields with JPA auditing:
     - `created_at`
     - `updated_at`
-- Database schema validation with Hibernate
 
-### DTOs & Mapping
+### DTOs and Mapping
 
 - DTO-based request and response handling
-- DTOs refactored to Java records where appropriate
-- Entity-to-DTO mappers
+- Java record DTOs where appropriate
 - Read-only DTOs for API responses
-- Request DTOs for insert/update operations
+- Insert/update DTOs for request payloads
+- Entity-to-DTO mapper classes
 
 ### Error Handling
 
 - Global exception handling
 - Custom application exceptions
 - Consistent API error responses
+- Centralized handling for controller-level errors
 
 ### Testing
 
@@ -141,21 +176,23 @@ src/test/java/gr/aueb/cf/eshop_app
 
 ---
 
-## Database
+## Database and Persistence
 
 The application uses **PostgreSQL** as the relational database.
 
 Database schema changes are handled through **Flyway migrations**. When the application starts, Flyway automatically applies any pending migrations.
 
-Hibernate is configured with schema validation, so the application expects the database schema to match the JPA entities.
+Hibernate is configured with schema validation:
 
 ```properties
 spring.jpa.hibernate.ddl-auto=validate
 ```
 
-### Auditing
+This means that the application expects the database schema to match the JPA entities.
 
-Entities inherit common fields from `AbstractEntity`, including:
+### Audited Base Entity
+
+Entities inherit common fields from `AbstractEntity`:
 
 ```text
 id
@@ -165,11 +202,21 @@ updated_at
 
 JPA auditing is enabled through `@EnableJpaAuditing` in the main Spring Boot application class.
 
+### Database Migrations
+
+Flyway migration files are stored in:
+
+```text
+src/main/resources/db/migration
+```
+
+The project uses migrations for table creation, seed data, product display fields, user roles, and audit columns.
+
 ---
 
 ## Configuration
 
-The real `application.properties` file is intentionally excluded from version control for security reasons.
+The real `application.properties` file is intentionally excluded from version control because it may contain local database credentials or JWT secrets.
 
 An example configuration file is provided:
 
@@ -183,10 +230,10 @@ Create a local configuration file:
 src/main/resources/application.properties
 ```
 
-Example structure:
+Example configuration:
 
 ```properties
-spring.application.name=e-shop
+spring.application.name=e-shop-app
 server.port=8080
 
 spring.datasource.url=jdbc:postgresql://localhost:5432/your_database_name
@@ -207,6 +254,20 @@ app.jwt.expiration-ms=86400000
 ```
 
 Do not commit real database credentials, JWT secrets, or environment-specific configuration.
+
+### Test Profile
+
+The project can also use a test-specific configuration file:
+
+```text
+application-test.properties
+```
+
+Spring Boot tests that need the test profile can use:
+
+```java
+@ActiveProfiles("test")
+```
 
 ---
 
@@ -246,7 +307,7 @@ Run the test suite with:
 mvn clean test
 ```
 
-To compile the project without running the application:
+Compile the project without running the application:
 
 ```bash
 mvn clean compile
@@ -256,7 +317,7 @@ mvn clean compile
 
 ## API Documentation with Swagger
 
-The backend includes **OpenAPI/Swagger documentation** using Springdoc.
+The backend includes OpenAPI/Swagger documentation using Springdoc.
 
 After starting the Spring Boot application, Swagger UI is available at:
 
@@ -270,7 +331,12 @@ The raw OpenAPI specification is available at:
 http://localhost:8080/v3/api-docs
 ```
 
-For protected endpoints, authenticate through the login endpoint, copy the returned JWT token, and use the **Authorize** button in Swagger UI with:
+For protected endpoints:
+
+1. Authenticate through the login endpoint.
+2. Copy the returned JWT token.
+3. Use the **Authorize** button in Swagger UI.
+4. Enter the token in this format:
 
 ```text
 Bearer <your_jwt_token>
@@ -335,11 +401,11 @@ DELETE /api/cart/{id}
 ### Orders
 
 ```http
-GET    /api/orders
-GET    /api/orders/{id}
-POST   /api/orders
-PUT    /api/orders/{id}
-DELETE /api/orders/{id}
+GET  /api/orders
+GET  /api/orders/{id}
+GET  /api/orders/my-orders
+GET  /api/orders/user/{userId}
+POST /api/orders/checkout
 ```
 
 ---
@@ -357,29 +423,33 @@ Public access is allowed for:
 
 Authenticated access is required for:
 
-- Current user profile endpoint
+- Current user profile endpoint: `GET /api/users/me`
 - Cart-related endpoints
-- Order-related endpoints
+- Checkout endpoint: `POST /api/orders/checkout`
+- Current user's orders: `GET /api/orders/my-orders`
 
 Admin access is required for:
 
 - User management
 - Product creation, update, and deletion
 - Category creation, update, and deletion
+- Administrative order endpoints such as all orders, order by ID, and orders by user ID
 
 General access logic:
 
 | Endpoint Type | Access |
-| --- | --- |
+|---|---|
 | `POST /api/auth/**` | Public |
 | `GET /api/products/**` | Public |
 | `GET /api/categories/**` | Public |
-| `/api/users/me` | Authenticated user |
+| `GET /api/users/me` | Authenticated user |
 | `/api/users/**` | Admin |
 | `POST`, `PUT`, `PATCH`, `DELETE /api/products/**` | Admin |
 | `POST`, `PUT`, `PATCH`, `DELETE /api/categories/**` | Admin |
 | `/api/cart/**` | Authenticated user |
-| `/api/orders/**` | Authenticated user |
+| `POST /api/orders/checkout` | Authenticated user |
+| `GET /api/orders/my-orders` | Authenticated user |
+| Administrative order endpoints | Admin |
 
 ---
 
@@ -403,7 +473,7 @@ Before running the project locally:
 
 1. Create a PostgreSQL database.
 2. Create a local `application.properties` file based on `application-example.properties`.
-3. Configure the local database connection.
+3. Configure the local database connection and JWT secret.
 4. Start the Spring Boot application.
 5. Flyway will automatically apply the database migrations.
 6. Open Swagger UI, the Angular frontend, or an API client to interact with the backend.
@@ -421,6 +491,7 @@ Completed:
 - Role-based authorization
 - Ordered endpoint authorization rules
 - Cart structure
+- Checkout endpoint
 - Order structure
 - Flyway migrations
 - Global exception handling
@@ -431,15 +502,19 @@ Completed:
 - OpenAPI/Swagger API documentation
 - Mockito service-layer tests
 
-Planned improvements:
+---
 
-- Complete checkout flow
-- Improve order creation from cart
-- Add admin dashboard
-- Improve validation error responses
+## Planned Improvements
+
+Future improvements may include:
+
+- Improve order ownership checks for user-specific order access
 - Add product search and filtering
 - Add pagination if the product catalog grows
+- Add admin dashboard integration from the frontend
+- Improve validation error responses
 - Expand automated test coverage
+- Add integration/security tests
 - Add deployment configuration
 
 ---
@@ -451,7 +526,7 @@ This backend is part of a full-stack e-shop application.
 Frontend repository:
 
 ```text
-Angular E-Shop Frontend
+https://github.com/jroumpekas/eshop-app-frontend
 ```
 
 ---
