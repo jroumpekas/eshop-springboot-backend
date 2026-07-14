@@ -6,6 +6,9 @@ import gr.aueb.cf.eshop_app.dto.ProductUpdateDTO;
 import gr.aueb.cf.eshop_app.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,14 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductReadOnlyDTO> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    @GetMapping("/paged")
+    public ResponseEntity<Page<ProductReadOnlyDTO>> getPaginatedProducts(
+            @PageableDefault(page = 0, size = 3, sort = "name") Pageable pageable
+    ) {
+        Page<ProductReadOnlyDTO> productsPage = productService.getPaginatedProducts(pageable);
+        return ResponseEntity.ok(productsPage);
     }
 
     @PostMapping

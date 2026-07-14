@@ -9,6 +9,8 @@ import gr.aueb.cf.eshop_app.models.Product;
 import gr.aueb.cf.eshop_app.repository.ProductRepository;
 import gr.aueb.cf.eshop_app.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,4 +75,14 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.deleteById(id);
     }
+
+
+    @Override
+    public Page<ProductReadOnlyDTO> getPaginatedProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(productMapper::mapToReadOnlyDTO);
+    }
+
+
+
 }
