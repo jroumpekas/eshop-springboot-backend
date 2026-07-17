@@ -15,11 +15,13 @@ The backend provides the server-side functionality for an e-commerce platform, i
 - [Database and Persistence](#database-and-persistence)
 - [Configuration](#configuration)
 - [Running the Application](#running-the-application)
+- [Build](#build)
 - [Running Tests](#running-tests)
 - [API Documentation with Swagger](#api-documentation-with-swagger)
 - [API Overview](#api-overview)
 - [Security Rules](#security-rules)
 - [Frontend Integration](#frontend-integration)
+- [Deployment](#deployment)
 - [Local Development Setup](#local-development-setup)
 - [Current Status](#current-status)
 - [Planned Improvements](#planned-improvements)
@@ -44,6 +46,8 @@ The backend is responsible for:
 - Returning consistent error responses through global exception handling
 - Using a shared audited base entity for common entity fields
 - Providing API documentation through Swagger UI
+
+The project is designed as a portfolio application and demonstrates a layered Spring Boot architecture connected to a PostgreSQL database and an Angular frontend.
 
 ---
 
@@ -81,6 +85,7 @@ The backend is responsible for:
 ### Product and Category Management
 
 - Retrieve all products
+- Retrieve paginated products
 - Retrieve product details
 - Retrieve all categories
 - Retrieve category details
@@ -100,10 +105,12 @@ The backend is responsible for:
 ### Orders
 
 - Order and order item structure
-- Authenticated users can view their own orders
-- Admin users can access administrative order endpoints
+- Authenticated users can access order-related endpoints
+- Current user order history endpoint
 - Order total amount handling
 - Order item quantity and price handling
+
+> Note: More granular order ownership checks and admin-only restrictions for administrative order endpoints are listed as planned improvements.
 
 ### Database and Persistence
 
@@ -137,6 +144,7 @@ The backend is responsible for:
 - Service-layer unit tests
 - Mockito-based repository mocking
 - Tests updated to support inherited entity IDs from `AbstractEntity`
+- Test-specific application profile support
 
 ### API Documentation
 
@@ -230,7 +238,7 @@ Create a local configuration file:
 src/main/resources/application.properties
 ```
 
-Example configuration:
+Example local configuration:
 
 ```properties
 spring.application.name=e-shop-app
@@ -269,6 +277,20 @@ Spring Boot tests that need the test profile can use:
 @ActiveProfiles("test")
 ```
 
+### Production Configuration
+
+For deployment, production values should be provided through environment variables instead of committed property files.
+
+Common production environment variables may include:
+
+```text
+SPRING_DATASOURCE_URL
+SPRING_DATASOURCE_USERNAME
+SPRING_DATASOURCE_PASSWORD
+JWT_SECRET
+JWT_EXPIRATION_MS
+```
+
 ---
 
 ## Running the Application
@@ -299,18 +321,34 @@ http://localhost:8080
 
 ---
 
+## Build
+
+To compile and package the backend application:
+
+```bash
+mvn clean package
+```
+
+The generated JAR file will be created under:
+
+```text
+target/
+```
+
+To compile the project without packaging:
+
+```bash
+mvn clean compile
+```
+
+---
+
 ## Running Tests
 
 Run the test suite with:
 
 ```bash
 mvn clean test
-```
-
-Compile the project without running the application:
-
-```bash
-mvn clean compile
 ```
 
 ---
@@ -374,11 +412,14 @@ DELETE /api/users/{id}
 
 ```http
 GET    /api/products
+GET    /api/products/paged?page=0&size=3&sort=name
 GET    /api/products/{id}
 POST   /api/products
 PUT    /api/products/{id}
 DELETE /api/products/{id}
 ```
+
+The paginated products endpoint returns a Spring `Page` response. Product items are available under the `content` field.
 
 ### Categories
 
@@ -427,13 +468,13 @@ Authenticated access is required for:
 - Cart-related endpoints
 - Checkout endpoint: `POST /api/orders/checkout`
 - Current user's orders: `GET /api/orders/my-orders`
+- Order-related endpoints
 
 Admin access is required for:
 
 - User management
 - Product creation, update, and deletion
 - Category creation, update, and deletion
-- Administrative order endpoints such as all orders, order by ID, and orders by user ID
 
 General access logic:
 
@@ -447,9 +488,9 @@ General access logic:
 | `POST`, `PUT`, `PATCH`, `DELETE /api/products/**` | Admin |
 | `POST`, `PUT`, `PATCH`, `DELETE /api/categories/**` | Admin |
 | `/api/cart/**` | Authenticated user |
-| `POST /api/orders/checkout` | Authenticated user |
-| `GET /api/orders/my-orders` | Authenticated user |
-| Administrative order endpoints | Admin |
+| `/api/orders/**` | Authenticated user |
+
+Planned security improvements include more granular order ownership checks and stricter admin-only access for administrative order endpoints.
 
 ---
 
@@ -464,6 +505,45 @@ http://localhost:4200
 ```
 
 CORS is configured for local frontend-backend communication during development.
+
+The related frontend repository is listed in the [Related Project](#related-project) section.
+
+---
+
+## Deployment
+
+The backend can be deployed to a Java-compatible hosting provider such as Render, Railway, or a VPS.
+
+Recommended deployment setup:
+
+- Backend: Spring Boot application
+- Database: PostgreSQL
+- Configuration: environment variables
+- Frontend: Angular application hosted separately
+
+Before deployment:
+
+1. Build the backend application:
+
+```bash
+mvn clean package
+```
+
+2. Configure production database and JWT values through environment variables.
+
+3. Run the packaged JAR:
+
+```bash
+java -jar target/e-shop-app.jar
+```
+
+If a production profile is added, the application can be started with:
+
+```bash
+java -jar target/e-shop-app.jar --spring.profiles.active=prod
+```
+
+Do not store production database credentials or JWT secrets inside committed configuration files.
 
 ---
 
@@ -485,6 +565,7 @@ Before running the project locally:
 Completed:
 
 - Product API
+- Product pagination endpoint
 - Category API
 - User API
 - JWT authentication
@@ -501,6 +582,7 @@ Completed:
 - Angular frontend integration
 - OpenAPI/Swagger API documentation
 - Mockito service-layer tests
+- Test application profile
 
 ---
 
@@ -509,13 +591,14 @@ Completed:
 Future improvements may include:
 
 - Improve order ownership checks for user-specific order access
+- Restrict administrative order endpoints more strictly by role
 - Add product search and filtering
-- Add pagination if the product catalog grows
 - Add admin dashboard integration from the frontend
 - Improve validation error responses
 - Expand automated test coverage
 - Add integration/security tests
-- Add deployment configuration
+- Add full production deployment configuration
+- Add Docker support for local development or deployment
 
 ---
 
