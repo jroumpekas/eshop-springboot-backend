@@ -9,6 +9,7 @@ The backend provides the server-side functionality for an e-commerce platform, i
 ## Table of Contents
 
 - [Overview](#overview)
+- [Live Deployment](#live-deployment)
 - [Tech Stack](#tech-stack)
 - [Features](#features)
 - [Project Structure](#project-structure)
@@ -51,6 +52,19 @@ The project is designed as a portfolio application and demonstrates a layered Sp
 
 ---
 
+## Live Deployment
+
+The backend is deployed on Render and connected to a managed Render PostgreSQL database.
+
+- **Backend API:** [eshop-springboot-backend.onrender.com](https://eshop-springboot-backend.onrender.com)
+- **Swagger UI:** [Open Swagger UI](https://eshop-springboot-backend.onrender.com/swagger-ui/index.html)
+- **OpenAPI specification:** [View OpenAPI JSON](https://eshop-springboot-backend.onrender.com/v3/api-docs)
+- **Angular frontend:** [eshop-angular-frontend.onrender.com](https://eshop-angular-frontend.onrender.com)
+
+> The Render service may require a short initial loading time after a period of inactivity.
+
+---
+
 ## Tech Stack
 
 - Java
@@ -67,6 +81,8 @@ The project is designed as a portfolio application and demonstrates a layered Sp
 - JUnit
 - Mockito
 - Springdoc OpenAPI / Swagger UI
+- Docker
+- Render
 
 ---
 
@@ -121,8 +137,8 @@ The project is designed as a portfolio application and demonstrates a layered Sp
 - Common `AbstractEntity` base class
 - Shared entity ID handling
 - Audit fields with JPA auditing:
-    - `created_at`
-    - `updated_at`
+  - `created_at`
+  - `updated_at`
 
 ### DTOs and Mapping
 
@@ -150,8 +166,8 @@ The project is designed as a portfolio application and demonstrates a layered Sp
 
 - OpenAPI documentation generated with Springdoc
 - Swagger UI for browsing and testing backend endpoints
-- Public Swagger/OpenAPI access for local development
-- JWT-protected endpoints can be tested through Swagger using a Bearer token
+- Public Swagger/OpenAPI access for local development and the deployed service
+- JWT-protected endpoints can be tested through an API client using a Bearer token
 
 ---
 
@@ -287,8 +303,14 @@ Common production environment variables may include:
 SPRING_DATASOURCE_URL
 SPRING_DATASOURCE_USERNAME
 SPRING_DATASOURCE_PASSWORD
-JWT_SECRET
-JWT_EXPIRATION_MS
+APP_JWT_SECRET
+APP_JWT_EXPIRATION_MS
+```
+
+The application should also bind to Render's dynamic port:
+
+```properties
+server.port=${PORT:8080}
 ```
 
 ---
@@ -369,15 +391,16 @@ The raw OpenAPI specification is available at:
 http://localhost:8080/v3/api-docs
 ```
 
-For protected endpoints:
-
-1. Authenticate through the login endpoint.
-2. Copy the returned JWT token.
-3. Use the **Authorize** button in Swagger UI.
-4. Enter the token in this format:
+The deployed Swagger UI is available at:
 
 ```text
-Bearer <your_jwt_token>
+https://eshop-springboot-backend.onrender.com/swagger-ui/index.html
+```
+
+For protected endpoints, authenticate through `POST /api/auth/login` and send the returned token from an API client in the `Authorization` header:
+
+```http
+Authorization: Bearer <your_jwt_token>
 ```
 
 Swagger-related endpoints are allowed through Spring Security:
@@ -488,7 +511,9 @@ General access logic:
 | `POST`, `PUT`, `PATCH`, `DELETE /api/products/**` | Admin |
 | `POST`, `PUT`, `PATCH`, `DELETE /api/categories/**` | Admin |
 | `/api/cart/**` | Authenticated user |
-| `/api/orders/**` | Authenticated user |
+| `POST /api/orders/checkout` | Authenticated user |
+| `GET /api/orders/my-orders` | Authenticated user |
+| Administrative `/api/orders/**` endpoints | Admin |
 
 Planned security improvements include more granular order ownership checks and stricter admin-only access for administrative order endpoints.
 
@@ -504,7 +529,12 @@ Default frontend development URL:
 http://localhost:4200
 ```
 
-CORS is configured for local frontend-backend communication during development.
+CORS is configured for both local development and the deployed Angular application:
+
+```text
+http://localhost:4200
+https://eshop-angular-frontend.onrender.com
+```
 
 The related frontend repository is listed in the [Related Project](#related-project) section.
 
@@ -512,16 +542,9 @@ The related frontend repository is listed in the [Related Project](#related-proj
 
 ## Deployment
 
-The backend can be deployed to a Java-compatible hosting provider such as Render, Railway, or a VPS.
+The backend is deployed as a Docker-based Render Web Service. It uses a separately managed Render PostgreSQL database and environment variables for credentials and JWT configuration.
 
-Recommended deployment setup:
-
-- Backend: Spring Boot application
-- Database: PostgreSQL
-- Configuration: environment variables
-- Frontend: Angular application hosted separately
-
-Before deployment:
+Deployment workflow:
 
 1. Build the backend application:
 
@@ -529,18 +552,14 @@ Before deployment:
 mvn clean package
 ```
 
-2. Configure production database and JWT values through environment variables.
+2. Configure production database and JWT values through Render environment variables.
 
-3. Run the packaged JAR:
+3. Build and run the Docker image using the repository's `Dockerfile`.
+
+The packaged application can also be run directly with:
 
 ```bash
 java -jar target/e-shop-app.jar
-```
-
-If a production profile is added, the application can be started with:
-
-```bash
-java -jar target/e-shop-app.jar --spring.profiles.active=prod
 ```
 
 Do not store production database credentials or JWT secrets inside committed configuration files.
@@ -583,6 +602,10 @@ Completed:
 - OpenAPI/Swagger API documentation
 - Mockito service-layer tests
 - Test application profile
+- Docker-based backend deployment on Render
+- Managed PostgreSQL deployment on Render
+- Production Angular CORS configuration
+- Live Swagger/OpenAPI documentation
 
 ---
 
@@ -597,8 +620,8 @@ Future improvements may include:
 - Improve validation error responses
 - Expand automated test coverage
 - Add integration/security tests
-- Add full production deployment configuration
-- Add Docker support for local development or deployment
+- Add health checks and application monitoring
+- Improve deployment automation and production observability
 
 ---
 
@@ -608,9 +631,11 @@ This backend is part of a full-stack e-shop application.
 
 Frontend repository:
 
-```text
-https://github.com/jroumpekas/eshop-app-frontend
-```
+[github.com/jroumpekas/eshop-app-frontend](https://github.com/jroumpekas/eshop-app-frontend)
+
+Live frontend:
+
+[eshop-angular-frontend.onrender.com](https://eshop-angular-frontend.onrender.com)
 
 ---
 
