@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -46,12 +47,12 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderReadOnlyDTO> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<OrderReadOnlyDTO> getOrderById(@PathVariable UUID id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderReadOnlyDTO>> getOrdersByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<OrderReadOnlyDTO>> getOrdersByUserId(@PathVariable UUID userId) {
         return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 

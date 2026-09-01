@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class CartItemServiceImpl implements CartItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CartItemReadOnlyDTO> getCartByUserId(Long userId) {
+    public List<CartItemReadOnlyDTO> getCartByUserId(UUID userId) {
         User user = getUserOrThrow(userId);
 
         return cartItemRepository.findByUser(user)
@@ -40,7 +41,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItemReadOnlyDTO addItemToCart(Long userId, CartItemInsertDTO dto) {
+    public CartItemReadOnlyDTO addItemToCart(UUID userId, CartItemInsertDTO dto) {
         User user = getUserOrThrow(userId);
 
         Product product = productRepository.findById(dto.productId())
@@ -80,7 +81,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public CartItemReadOnlyDTO updateCartItemQuantity(Long cartItemId, CartItemUpdateDTO dto) {
+    public CartItemReadOnlyDTO updateCartItemQuantity(UUID cartItemId, CartItemUpdateDTO dto) {
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Cart item with id " + cartItemId + " was not found"
@@ -100,7 +101,7 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public void removeCartItem(Long cartItemId) {
+    public void removeCartItem(UUID cartItemId) {
         if (!cartItemRepository.existsById(cartItemId)) {
             throw new EntityNotFoundException("Cart item with id " + cartItemId + " was not found");
         }
@@ -109,13 +110,13 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
-    public void clearCart(Long userId) {
+    public void clearCart(UUID userId) {
         User user = getUserOrThrow(userId);
 
         cartItemRepository.deleteByUser(user);
     }
 
-    private User getUserOrThrow(Long userId) {
+    private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User with id " + userId + " was not found"

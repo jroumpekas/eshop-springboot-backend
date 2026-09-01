@@ -6,18 +6,19 @@ import gr.aueb.cf.eshop_app.dto.ProductUpdateDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductService {
 
     List<ProductReadOnlyDTO> getAllProducts();
 
-    ProductReadOnlyDTO getProductById(Long id);
+    ProductReadOnlyDTO getProductById(UUID id);
 
     ProductReadOnlyDTO createProduct(ProductInsertDTO dto);
 
-    ProductReadOnlyDTO updateProduct(Long id, ProductUpdateDTO dto);
+    ProductReadOnlyDTO updateProduct(UUID id, ProductUpdateDTO dto);
 
-    void deleteProduct(Long id);
+    void deleteProduct(UUID id);
 
     Page<ProductReadOnlyDTO> getPaginatedProducts(Pageable pageable);
 }

@@ -5,16 +5,17 @@ import gr.aueb.cf.eshop_app.dto.CategoryReadOnlyDTO;
 import gr.aueb.cf.eshop_app.dto.CategoryUpdateDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CategoryService {
 
     List<CategoryReadOnlyDTO> getAllCategories();
 
-    CategoryReadOnlyDTO getCategoryById(Long id);
+    CategoryReadOnlyDTO getCategoryById(UUID id);
 
     CategoryReadOnlyDTO createCategory(CategoryInsertDTO dto);
 
-    CategoryReadOnlyDTO updateCategory(Long id, CategoryUpdateDTO dto);
+    CategoryReadOnlyDTO updateCategory(UUID id, CategoryUpdateDTO dto);
 
-    void deleteCategory(Long id);
+    void deleteCategory(UUID id);
 }

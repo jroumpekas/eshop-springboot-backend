@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -36,8 +37,11 @@ class ProductServiceImplTest {
     @Test
     void getAllProductsReturnsMappedProducts() {
         // Arrange
+        UUID id1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+        UUID id2 = UUID.fromString("22222222-2222-2222-2222-222222222222");
+
         Product product1 = createProduct(
-                1L,
+                id1,
                 "Wireless Mouse",
                 "Wireless mouse description",
                 new BigDecimal("24.90"),
@@ -45,7 +49,7 @@ class ProductServiceImplTest {
         );
 
         Product product2 = createProduct(
-                2L,
+                id2,
                 "Laptop Lenovo",
                 "Laptop description",
                 new BigDecimal("749.99"),
@@ -76,7 +80,7 @@ class ProductServiceImplTest {
     @Test
     void getProductByIdWithExistingIdReturnsProduct() {
         // Arrange
-        Long productId = 1L;
+        UUID productId = UUID.randomUUID();
 
         Product product = createProduct(
                 productId,
@@ -105,7 +109,7 @@ class ProductServiceImplTest {
     @Test
     void getProductByIdWithUnknownIdThrowsResourceNotFoundException() {
         // Arrange
-        Long productId = 99L;
+        UUID productId = UUID.randomUUID();
 
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
@@ -116,7 +120,7 @@ class ProductServiceImplTest {
         );
 
         // Assert
-        assertEquals("Product with id 99 was not found", exception.getMessage());
+        assertEquals("Product with id " + productId + " was not found", exception.getMessage());
 
         verify(productRepository).findById(productId);
         verifyNoInteractions(productMapper);
@@ -158,7 +162,7 @@ class ProductServiceImplTest {
                 .rating(insertDTO.rating())
                 .build();
 
-        savedProduct.setId(1L);
+        savedProduct.setId(UUID.randomUUID());
 
         ProductReadOnlyDTO expectedDTO = createReadOnlyDTO(savedProduct);
 
@@ -181,7 +185,7 @@ class ProductServiceImplTest {
     @Test
     void updateProductWithExistingIdUpdatesProductAndReturnsMappedDTO() {
         // Arrange
-        Long productId = 1L;
+        UUID productId = UUID.randomUUID();
 
         Product existingProduct = createProduct(
                 productId,
@@ -234,7 +238,7 @@ class ProductServiceImplTest {
     @Test
     void updateProductWithUnknownIdThrowsResourceNotFoundException() {
         // Arrange
-        Long productId = 99L;
+        UUID productId = UUID.randomUUID();
 
         ProductUpdateDTO updateDTO = ProductUpdateDTO.builder()
                 .name("Updated Mouse")
@@ -252,7 +256,7 @@ class ProductServiceImplTest {
         );
 
         // Assert
-        assertEquals("Product with id 99 was not found", exception.getMessage());
+        assertEquals("Product with id " + productId + " was not found", exception.getMessage());
 
         verify(productRepository).findById(productId);
         verify(productRepository, never()).save(any(Product.class));
@@ -262,7 +266,7 @@ class ProductServiceImplTest {
     @Test
     void deleteProductWithExistingIdDeletesProduct() {
         // Arrange
-        Long productId = 1L;
+        UUID productId = UUID.randomUUID();
 
         when(productRepository.existsById(productId)).thenReturn(true);
 
@@ -277,7 +281,7 @@ class ProductServiceImplTest {
     @Test
     void deleteProductWithUnknownIdThrowsResourceNotFoundException() {
         // Arrange
-        Long productId = 99L;
+        UUID productId = UUID.randomUUID();
 
         when(productRepository.existsById(productId)).thenReturn(false);
 
@@ -288,7 +292,7 @@ class ProductServiceImplTest {
         );
 
         // Assert
-        assertEquals("Product with id 99 was not found", exception.getMessage());
+        assertEquals("Product with id " + productId + " was not found", exception.getMessage());
 
         verify(productRepository).existsById(productId);
         verify(productRepository, never()).deleteById(productId);
@@ -330,7 +334,7 @@ class ProductServiceImplTest {
                 .rating(insertDTO.rating())
                 .build();
 
-        savedProduct.setId(2L);
+        savedProduct.setId(UUID.randomUUID());
 
         ProductReadOnlyDTO expectedDTO = createReadOnlyDTO(savedProduct);
 
@@ -359,13 +363,13 @@ class ProductServiceImplTest {
     }
 
     private Product createProduct(
-            Long id,
+            UUID id,
             String name,
             String description,
             BigDecimal price,
             Integer stock
     ) {
-        return Product.builder()
+        Product product = Product.builder()
                 .name(name)
                 .description(description)
                 .price(price)
@@ -375,6 +379,9 @@ class ProductServiceImplTest {
                 .category("Test Category")
                 .rating(new BigDecimal("4.5"))
                 .build();
+
+        product.setId(id);
+        return product;
     }
 
     private ProductReadOnlyDTO createReadOnlyDTO(Product product) {

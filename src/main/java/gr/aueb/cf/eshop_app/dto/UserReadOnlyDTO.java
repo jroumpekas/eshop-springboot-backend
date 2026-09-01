@@ -2,10 +2,12 @@ package gr.aueb.cf.eshop_app.dto;
 
 import lombok.Builder;
 
+import java.util.UUID;
+
 @Builder
 public record UserReadOnlyDTO (
 
-        Long id,
+        UUID id,
         String username,
         String email,
         String firstName,

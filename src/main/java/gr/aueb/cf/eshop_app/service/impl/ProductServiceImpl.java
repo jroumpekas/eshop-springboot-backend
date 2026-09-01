@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
 
+    // 1. ΠΛΗΡΗΣ ΜΕΘΟΔΟΣ: Επιστρέφει όλα τα προϊόντα μετατρεπόμενα σε UUID DTOs
     @Override
     @Transactional(readOnly = true)
     public List<ProductReadOnlyDTO> getAllProducts() {
@@ -33,13 +35,19 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+    // 2. ΠΛΗΡΗΣ ΜΕΘΟΔΟΣ: Επιστρέφει τα σελιδοποιημένα προϊόντα μετατρεπόμενα σε UUID DTOs
     @Override
     @Transactional(readOnly = true)
-    public ProductReadOnlyDTO getProductById(Long id) {
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " was not found"
+    public Page<ProductReadOnlyDTO> getPaginatedProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(productMapper::mapToReadOnlyDTO);
+    }
 
-                ));
+    @Override
+    @Transactional(readOnly = true)
+    public ProductReadOnlyDTO getProductById(UUID id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " was not found"));
 
         return productMapper.mapToReadOnlyDTO(product);
     }
@@ -47,42 +55,25 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductReadOnlyDTO createProduct(ProductInsertDTO dto) {
         Product product = productMapper.mapToProduct(dto);
-
         Product savedProduct = productRepository.save(product);
-
         return productMapper.mapToReadOnlyDTO(savedProduct);
     }
 
     @Override
-    public ProductReadOnlyDTO updateProduct(Long id, ProductUpdateDTO dto) {
+    public ProductReadOnlyDTO updateProduct(UUID id, ProductUpdateDTO dto) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " was not found"
-
-                ));
+                .orElseThrow(() -> new ResourceNotFoundException("Product with id " + id + " was not found"));
 
         productMapper.updateProductFromDTO(product, dto);
-
         Product updatedProduct = productRepository.save(product);
-
         return productMapper.mapToReadOnlyDTO(updatedProduct);
     }
 
     @Override
-    public void deleteProduct(Long id) {
+    public void deleteProduct(UUID id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product with id " + id + " was not found");
         }
-
         productRepository.deleteById(id);
     }
-
-
-    @Override
-    public Page<ProductReadOnlyDTO> getPaginatedProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
-                .map(productMapper::mapToReadOnlyDTO);
-    }
-
-
-
 }

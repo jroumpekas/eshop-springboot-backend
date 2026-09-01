@@ -22,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,15 +52,18 @@ class OrderServiceImplTest {
     void checkoutWithValidRequestCreatesOrderAndReducesStock() {
         // Arrange
         String username = "admin";
+        UUID userId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
 
-        User user = createUser(1L, username);
-        Product product = createProduct(10L, "Laptop Lenovo", new BigDecimal("100.00"), 5);
+        User user = createUser(userId, username);
+        Product product = createProduct(productId, "Laptop Lenovo", new BigDecimal("100.00"), 5);
 
-        CheckoutRequestDTO request = createCheckoutRequest(10L, 2);
+        CheckoutRequestDTO request = createCheckoutRequest(productId, 2);
 
         OrderReadOnlyDTO expectedDTO = OrderReadOnlyDTO.builder()
-                .id(1L)
-                .userId(1L)
+                .id(orderId)
+                .userId(userId)
                 .username(username)
                 .totalAmount(new BigDecimal("200.00"))
                 .status("COMPLETED")
@@ -67,7 +71,7 @@ class OrderServiceImplTest {
                 .build();
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(orderMapper.mapToReadOnlyDTO(any(Order.class))).thenReturn(expectedDTO);
 
@@ -97,7 +101,7 @@ class OrderServiceImplTest {
         assertEquals(100.00, savedOrder.getOrderItems().get(0).getPrice());
 
         verify(userRepository).findByUsername(username);
-        verify(productRepository).findById(10L);
+        verify(productRepository).findById(productId);
         verify(orderRepository).save(any(Order.class));
         verify(orderMapper).mapToReadOnlyDTO(any(Order.class));
     }
@@ -106,7 +110,8 @@ class OrderServiceImplTest {
     void checkoutWithEmptyItemsThrowsException() {
         // Arrange
         String username = "admin";
-        User user = createUser(1L, username);
+        UUID userId = UUID.randomUUID();
+        User user = createUser(userId, username);
 
         CheckoutRequestDTO request = new CheckoutRequestDTO(List.of());
 
@@ -131,14 +136,16 @@ class OrderServiceImplTest {
     void checkoutWithQuantityGreaterThanStockThrowsException() {
         // Arrange
         String username = "admin";
+        UUID userId = UUID.randomUUID();
+        UUID productId = UUID.randomUUID();
 
-        User user = createUser(1L, username);
-        Product product = createProduct(10L, "Laptop Lenovo", new BigDecimal("100.00"), 3);
+        User user = createUser(userId, username);
+        Product product = createProduct(productId, "Laptop Lenovo", new BigDecimal("100.00"), 3);
 
-        CheckoutRequestDTO request = createCheckoutRequest(10L, 10);
+        CheckoutRequestDTO request = createCheckoutRequest(productId, 10);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(productRepository.findById(10L)).thenReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // Act
         IllegalArgumentException exception = assertThrows(
@@ -151,7 +158,7 @@ class OrderServiceImplTest {
         assertEquals(3, product.getStock());
 
         verify(userRepository).findByUsername(username);
-        verify(productRepository).findById(10L);
+        verify(productRepository).findById(productId);
         verify(orderRepository, never()).save(any(Order.class));
         verifyNoInteractions(orderMapper);
     }
@@ -160,7 +167,8 @@ class OrderServiceImplTest {
     void checkoutWithUnknownUserThrowsEntityNotFoundException() {
         // Arrange
         String username = "unknown-user";
-        CheckoutRequestDTO request = createCheckoutRequest(10L, 1);
+        UUID productId = UUID.randomUUID();
+        CheckoutRequestDTO request = createCheckoutRequest(productId, 1);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
@@ -183,12 +191,14 @@ class OrderServiceImplTest {
     void checkoutWithUnknownProductThrowsEntityNotFoundException() {
         // Arrange
         String username = "admin";
+        UUID userId = UUID.randomUUID();
+        UUID unknownProductId = UUID.randomUUID();
 
-        User user = createUser(1L, username);
-        CheckoutRequestDTO request = createCheckoutRequest(99L, 1);
+        User user = createUser(userId, username);
+        CheckoutRequestDTO request = createCheckoutRequest(unknownProductId, 1);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
-        when(productRepository.findById(99L)).thenReturn(Optional.empty());
+        when(productRepository.findById(unknownProductId)).thenReturn(Optional.empty());
 
         // Act
         EntityNotFoundException exception = assertThrows(
@@ -197,10 +207,10 @@ class OrderServiceImplTest {
         );
 
         // Assert
-        assertEquals("Product with id 99 was not found", exception.getMessage());
+        assertEquals("Product with id " + unknownProductId + " was not found", exception.getMessage());
 
         verify(userRepository).findByUsername(username);
-        verify(productRepository).findById(99L);
+        verify(productRepository).findById(unknownProductId);
         verify(orderRepository, never()).save(any(Order.class));
         verifyNoInteractions(orderMapper);
     }
@@ -209,8 +219,10 @@ class OrderServiceImplTest {
     void getMyOrdersReturnsMappedOrders() {
         // Arrange
         String username = "admin";
+        UUID userId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
 
-        User user = createUser(1L, username);
+        User user = createUser(userId, username);
 
         Order order = Order.builder()
                 .user(user)
@@ -219,11 +231,11 @@ class OrderServiceImplTest {
                 .orderItems(List.of())
                 .build();
 
-        order.setId(1L);
+        order.setId(orderId);
 
         OrderReadOnlyDTO orderDTO = OrderReadOnlyDTO.builder()
-                .id(1L)
-                .userId(1L)
+                .id(orderId)
+                .userId(userId)
                 .username(username)
                 .status("COMPLETED")
                 .totalAmount(new BigDecimal("100.00"))
@@ -247,7 +259,7 @@ class OrderServiceImplTest {
         verify(orderMapper).mapToReadOnlyDTO(order);
     }
 
-    private User createUser(Long id, String username) {
+    private User createUser(UUID id, String username) {
         User user = new User();
         user.setId(id);
         user.setUsername(username);
@@ -258,7 +270,7 @@ class OrderServiceImplTest {
         return user;
     }
 
-    private Product createProduct(Long id, String name, BigDecimal price, Integer stock) {
+    private Product createProduct(UUID id, String name, BigDecimal price, Integer stock) {
         Product product = new Product();
         product.setId(id);
         product.setName(name);
@@ -268,7 +280,7 @@ class OrderServiceImplTest {
         return product;
     }
 
-    private CheckoutRequestDTO createCheckoutRequest(Long productId, Integer quantity) {
+    private CheckoutRequestDTO createCheckoutRequest(UUID productId, Integer quantity) {
         CheckoutItemDTO itemDTO = new CheckoutItemDTO(productId, quantity);
 
         return new CheckoutRequestDTO(List.of(itemDTO));

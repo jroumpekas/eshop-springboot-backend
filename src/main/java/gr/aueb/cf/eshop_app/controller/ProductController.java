@@ -7,13 +7,15 @@ import gr.aueb.cf.eshop_app.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -23,20 +25,26 @@ public class ProductController {
 
     private final ProductService productService;
 
+    // 1. Επιστρέφει ΟΛΑ τα προϊόντα (αυτό καλεί η Angular στη σελίδα των 12 προϊόντων)
     @GetMapping
     public ResponseEntity<List<ProductReadOnlyDTO>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
     }
 
+    // 2. Επιστρέφει προϊόν με βάση το UUID
     @GetMapping("/{id}")
-    public ResponseEntity<ProductReadOnlyDTO> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductReadOnlyDTO> getProductById(@PathVariable UUID id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
+    // 3. Επιστρέφει τα προϊόντα με Σελιδοποίηση (Paged)
     @GetMapping("/paged")
     public ResponseEntity<Page<ProductReadOnlyDTO>> getPaginatedProducts(
-            @PageableDefault(page = 0, size = 3, sort = "name") Pageable pageable
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
+            @RequestParam(defaultValue = "name") String sort
     ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
         Page<ProductReadOnlyDTO> productsPage = productService.getPaginatedProducts(pageable);
         return ResponseEntity.ok(productsPage);
     }
@@ -51,14 +59,14 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductReadOnlyDTO> updateProduct(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @Valid @RequestBody ProductUpdateDTO dto
     ) {
         return ResponseEntity.ok(productService.updateProduct(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }

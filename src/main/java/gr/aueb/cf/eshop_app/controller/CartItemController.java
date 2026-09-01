@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -21,14 +22,14 @@ public class CartItemController {
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<CartItemReadOnlyDTO>> getCartByUserId(
-            @PathVariable Long userId
+            @PathVariable UUID userId
     ) {
         return ResponseEntity.ok(cartItemService.getCartByUserId(userId));
     }
 
     @PostMapping("/{userId}")
     public ResponseEntity<CartItemReadOnlyDTO> addItemToCart(
-            @PathVariable Long userId,
+            @PathVariable UUID userId,
             @Valid @RequestBody CartItemInsertDTO dto
     ) {
         CartItemReadOnlyDTO cartItem = cartItemService.addItemToCart(userId, dto);
@@ -37,7 +38,7 @@ public class CartItemController {
 
     @PutMapping("/items/{cartItemId}")
     public ResponseEntity<CartItemReadOnlyDTO> updateCartItemQuantity(
-            @PathVariable Long cartItemId,
+            @PathVariable UUID cartItemId,
             @Valid @RequestBody CartItemUpdateDTO dto
     ) {
         return ResponseEntity.ok(cartItemService.updateCartItemQuantity(cartItemId, dto));
@@ -45,7 +46,7 @@ public class CartItemController {
 
     @DeleteMapping("/items/{cartItemId}")
     public ResponseEntity<Void> removeCartItem(
-            @PathVariable Long cartItemId
+            @PathVariable UUID cartItemId
     ) {
         cartItemService.removeCartItem(cartItemId);
         return ResponseEntity.noContent().build();
@@ -53,7 +54,7 @@ public class CartItemController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> clearCart(
-            @PathVariable Long userId
+            @PathVariable UUID userId
     ) {
         cartItemService.clearCart(userId);
         return ResponseEntity.noContent().build();

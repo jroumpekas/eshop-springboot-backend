@@ -5,16 +5,17 @@ import gr.aueb.cf.eshop_app.dto.CartItemReadOnlyDTO;
 import gr.aueb.cf.eshop_app.dto.CartItemUpdateDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CartItemService {
 
-    List<CartItemReadOnlyDTO> getCartByUserId(Long userId);
+    List<CartItemReadOnlyDTO> getCartByUserId(UUID userId);
 
-    CartItemReadOnlyDTO addItemToCart(Long userId, CartItemInsertDTO dto);
+    CartItemReadOnlyDTO addItemToCart(UUID userId, CartItemInsertDTO dto);
 
-    CartItemReadOnlyDTO updateCartItemQuantity(Long cartItemId, CartItemUpdateDTO dto);
+    CartItemReadOnlyDTO updateCartItemQuantity(UUID cartItemId, CartItemUpdateDTO dto);
 
-    void removeCartItem(Long cartItemId);
+    void removeCartItem(UUID cartItemId);
 
-    void clearCart(Long userId);
+    void clearCart(UUID userId);
 }

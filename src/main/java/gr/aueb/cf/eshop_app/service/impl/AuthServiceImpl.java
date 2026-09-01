@@ -38,11 +38,11 @@ public class AuthServiceImpl implements AuthService {
 
         String token = jwtService.generateToken(user.getUsername());
 
-        return new AuthResponseDTO(
-                token,
-                user.getId(),
-                user.getUsername(),
-                user.getEmail()
-        );
+        return AuthResponseDTO.builder()
+                .token(token)
+                .userId(user.getId()) // <--- UUID
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
     }
 }
