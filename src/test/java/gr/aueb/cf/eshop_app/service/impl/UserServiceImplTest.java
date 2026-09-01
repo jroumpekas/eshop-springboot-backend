@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -37,8 +38,11 @@ class UserServiceImplTest {
     @Test
     void getAllUsersReturnsMappedUsers() {
         // Arrange
-        User user1 = createUser(1L, "dimitris", "dimitris@test.com");
-        User user2 = createUser(2L, "maria", "maria@test.com");
+        UUID id1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
+        UUID id2 = UUID.fromString("22222222-2222-2222-2222-222222222222");
+
+        User user1 = createUser(id1, "dimitris", "dimitris@test.com");
+        User user2 = createUser(id2, "maria", "maria@test.com");
 
         UserReadOnlyDTO dto1 = createReadOnlyDTO(user1);
         UserReadOnlyDTO dto2 = createReadOnlyDTO(user2);
@@ -64,7 +68,7 @@ class UserServiceImplTest {
     @Test
     void getUserByIdWithExistingIdReturnsUser() {
         // Arrange
-        Long userId = 1L;
+        UUID userId = UUID.randomUUID();
 
         User user = createUser(userId, "dimitris", "dimitris@test.com");
         UserReadOnlyDTO expectedDTO = createReadOnlyDTO(user);
@@ -86,7 +90,7 @@ class UserServiceImplTest {
     @Test
     void getUserByIdWithUnknownIdThrowsEntityNotFoundException() {
         // Arrange
-        Long userId = 99L;
+        UUID userId = UUID.randomUUID();
 
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -97,7 +101,7 @@ class UserServiceImplTest {
         );
 
         // Assert
-        assertEquals("User with id 99 was not found", exception.getMessage());
+        assertEquals("User with id " + userId + " was not found", exception.getMessage());
 
         verify(userRepository).findById(userId);
         verifyNoInteractions(userMapper);
@@ -107,8 +111,9 @@ class UserServiceImplTest {
     void getUserByUsernameWithExistingUsernameReturnsUser() {
         // Arrange
         String username = "dimitris";
+        UUID userId = UUID.randomUUID();
 
-        User user = createUser(1L, username, "dimitris@test.com");
+        User user = createUser(userId, username, "dimitris@test.com");
         UserReadOnlyDTO expectedDTO = createReadOnlyDTO(user);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
@@ -176,7 +181,7 @@ class UserServiceImplTest {
                 .role(Role.USER)
                 .build();
 
-        savedUser.setId(1L);
+        savedUser.setId(UUID.randomUUID());
 
         UserReadOnlyDTO expectedDTO = createReadOnlyDTO(savedUser);
 
@@ -252,7 +257,7 @@ class UserServiceImplTest {
     @Test
     void deleteUserWithExistingIdDeletesUser() {
         // Arrange
-        Long userId = 1L;
+        UUID userId = UUID.randomUUID();
 
         when(userRepository.existsById(userId)).thenReturn(true);
 
@@ -267,7 +272,7 @@ class UserServiceImplTest {
     @Test
     void deleteUserWithUnknownIdThrowsEntityNotFoundException() {
         // Arrange
-        Long userId = 99L;
+        UUID userId = UUID.randomUUID();
 
         when(userRepository.existsById(userId)).thenReturn(false);
 
@@ -278,7 +283,7 @@ class UserServiceImplTest {
         );
 
         // Assert
-        assertEquals("User with id 99 was not found", exception.getMessage());
+        assertEquals("User with id " + userId + " was not found", exception.getMessage());
 
         verify(userRepository).existsById(userId);
         verify(userRepository, never()).deleteById(userId);
@@ -294,7 +299,7 @@ class UserServiceImplTest {
                 .build();
     }
 
-    private User createUser(Long id, String username, String email) {
+    private User createUser(UUID id, String username, String email) {
         User user = User.builder()
                 .username(username)
                 .email(email)
@@ -308,8 +313,6 @@ class UserServiceImplTest {
 
         return user;
     }
-
-
 
     private UserReadOnlyDTO createReadOnlyDTO(User user) {
         return UserReadOnlyDTO.builder()

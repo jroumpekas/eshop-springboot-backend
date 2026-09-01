@@ -4,12 +4,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
+import java.util.UUID;
+
 
 @Builder
 public record CartItemInsertDTO (
 
         @NotNull(message = "Το productId είναι υποχρεωτικό")
-        Long productId,
+        UUID productId,
 
         @NotNull(message = "Η ποσότητα είναι υποχρεωτική")
         @Min(value = 1, message = "Η ποσότητα πρέπει να είναι τουλάχιστον 1")

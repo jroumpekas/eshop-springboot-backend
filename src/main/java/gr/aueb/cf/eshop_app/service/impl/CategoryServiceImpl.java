@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryReadOnlyDTO getCategoryById(Long id) {
+    public CategoryReadOnlyDTO getCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category with id " + id + " was not found"));
 
@@ -50,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryReadOnlyDTO updateCategory(Long id, CategoryUpdateDTO dto) {
+    public CategoryReadOnlyDTO updateCategory(UUID id, CategoryUpdateDTO dto) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category with id " + id + " was not found"));
 
@@ -62,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void deleteCategory(Long id) {
+    public void deleteCategory(UUID id) {
         if (!categoryRepository.existsById(id)) {
             throw new EntityNotFoundException("Category with id " + id + " was not found");
         }

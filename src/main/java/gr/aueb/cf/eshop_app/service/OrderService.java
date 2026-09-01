@@ -4,16 +4,17 @@ import gr.aueb.cf.eshop_app.dto.CheckoutRequestDTO;
 import gr.aueb.cf.eshop_app.dto.OrderReadOnlyDTO;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OrderService {
 
     List<OrderReadOnlyDTO> getAllOrders();
 
-    OrderReadOnlyDTO getOrderById(Long id);
+    OrderReadOnlyDTO getOrderById(UUID id);
 
-    List<OrderReadOnlyDTO> getOrdersByUserId(Long userId);
+    List<OrderReadOnlyDTO> getOrdersByUserId(UUID userId);
 
-    OrderReadOnlyDTO checkout(Long userId);
+    OrderReadOnlyDTO checkout(UUID userId);
 
     OrderReadOnlyDTO checkout(String username, CheckoutRequestDTO request);
 

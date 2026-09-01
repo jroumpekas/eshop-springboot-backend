@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public OrderReadOnlyDTO getOrderById(Long id) {
+    public OrderReadOnlyDTO getOrderById(UUID id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Order with id " + id + " was not found"
@@ -57,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderReadOnlyDTO> getOrdersByUserId(Long userId) {
+    public List<OrderReadOnlyDTO> getOrdersByUserId(UUID userId) {
         User user = getUserOrThrow(userId);
 
         return orderRepository.findByUser(user)
@@ -71,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
      * You can keep it for now if your controller still uses it.
      */
     @Override
-    public OrderReadOnlyDTO checkout(Long userId) {
+    public OrderReadOnlyDTO checkout(UUID userId) {
         User user = getUserOrThrow(userId);
 
         List<CartItem> cartItems = cartItemRepository.findByUser(user);
@@ -199,7 +200,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
-    private User getUserOrThrow(Long userId) {
+    private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "User with id " + userId + " was not found"
